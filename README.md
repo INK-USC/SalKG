@@ -17,7 +17,7 @@ NeurIPS 2021
 
 - [ ] fine occl
 - [ ] hybrid models
-- [ ] release dataset files
+- [x] release dataset files
 - [ ] clean up configs
 
 ## Requirements
@@ -30,8 +30,7 @@ by `pip install -r requirements.txt`
 
 ## Data
 
-First download data and make the dataset looks like this
-(assuming you want to train SalKG models on csqa)
+First download [csqa data](https://drive.google.com/file/d/1T5hHXHHj8QUrzzsbqzIZ3fnIgF7Vi4Dr/view?usp=sharing) and make sure that the dataset folder look like this
 
 ```
 data/ # root dir
@@ -40,9 +39,9 @@ data/ # root dir
 
   mhgrn_data/
     csqa/
-      graph/
-      paths/
-      statement/
+      graph/      # extracted subgraphs
+      paths/      # unpruned/pruned paths
+      statement/  # csqa statement
 ```
 
 ## Usage
