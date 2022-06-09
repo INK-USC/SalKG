@@ -1255,8 +1255,6 @@ class SaliencyModel(pl.LightningModule):
         parser.add_argument('--sal_num_att_head', default=2, type=int)
         parser.add_argument('--input_dim_gpt', default=768, type=int)
 
-        parser.add_argument('--aristo_path',
-                            default='../data/mhgrn_data/obqa/roberta_mc_arcplus-try34-model/weights.th', type=str)
         parser.add_argument('--fine_checkpoint_path', default=None, type=str)
 
         return parser

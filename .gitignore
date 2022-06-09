@@ -1,20 +1,4 @@
 # user_defined
-fairseq/
-runner/
-
-*_*-*.sh
-
-c*_*.py
-h*_*.py
-f*_*.py
-qa*_*.py
-run_*.py
-try_*.py
-
-*.txt
-
-*-*.py
-sb.py
 
 
 # Byte-compiled / optimized / DLL files
@@ -27,6 +11,8 @@ __pycache__/
 *.cpp
 *.csv
 try.py
+data
+save
 
 test*
 

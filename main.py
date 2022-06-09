@@ -145,7 +145,7 @@ def build(args):
 
 def train(dm, model, args):
     neptune_logger = get_neptune_logger(args)
-    args.root_dir = f'../save2/{neptune_logger.experiment_id}'
+    args.root_dir = f'./save/{neptune_logger.experiment_id}'
 
     basic_logger.info('Building trainer...')
     trainer = pl.Trainer.from_argparse_args(

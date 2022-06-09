@@ -2,7 +2,6 @@ import os
 import sys
 
 sys.path.append(os.path.join(sys.path[0], '..'))
-from helper import *
 from pathlib import Path
 from collections import defaultdict
 

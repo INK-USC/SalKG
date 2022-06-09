@@ -1,5 +1,3 @@
-cd ../;
-
 RUN=$1
 
 if [[ $RUN == "mhgrn" ]]; then
@@ -9,7 +7,7 @@ if [[ $RUN == "mhgrn" ]]; then
         --freeze_epochs 0 --weight_decay 0.02 \
         --train_batch_size 32 --eval_batch_size 32 --accumulate_grad_batches 2 \
         --seed 2 --train_percentage 100 \
-        --encoder_pooler cls --text_encoder_head bos_token_mlp --data ../d 
+        --encoder_pooler cls --text_encoder_head bos_token_mlp
 
 elif [[ $RUN == "nokg" ]]; then
     echo "RUNING NO KG";

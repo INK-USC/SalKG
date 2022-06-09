@@ -1,0 +1,9 @@
+commentjson
+requests
+neptune-client
+transformers==4.1.1
+pytorch-lightning==1.1.2
+pickle5==0.0.11
+numpy
+tqdm
+scikit-learn

@@ -84,9 +84,9 @@ class SalKGDataModule(pl.LightningDataModule):
         parser.add_argument("--eval_batch_size", default=32, type=int)
         parser.add_argument("--num_workers", default=10, type=int)
         parser.add_argument("--task", default='qa', type=str, choices=['qa', 'saliency'])
-        parser.add_argument("--data", default='../data/', type=str)
-        parser.add_argument("--ent_emb_path", default='../data/mhgrn_data/cpnet/tzw.ent.npy', type=str)
-        parser.add_argument("--rel_emb_path", default='../data/mhgrn_data/transe/glove.transe.sgd.rel.npy', type=str)
+        parser.add_argument("--data", default='./data/', type=str)
+        parser.add_argument("--ent_emb_path", default='./data/mhgrn_data/cpnet/tzw.ent.npy', type=str)
+        parser.add_argument("--rel_emb_path", default='./data/mhgrn_data/transe/glove.transe.sgd.rel.npy', type=str)
         parser.add_argument("--dataset", default='csqa', type=str, choices=['csqa', 'obqa', 'codah'])
         parser.add_argument("--split_type", default='inhouse', type=str, choices=['inhouse', 'official', 'fold_0'])
         parser.add_argument('--saliency_mode', default='none', type=str, choices=['coarse', 'fine', 'none', 'hybrid'])
@@ -312,7 +312,7 @@ class SaliencyDataModule(SalKGDataModule):
         """use coarse saliency built from `nokg` and `kg` exp's csv"""
         assert (self.args.no_kg_exp is not None) and (self.args.kg_exp is not None)
         sal_keys = [
-            '{}.sal_coarse_{}_{}_cls{}_{}_FS{}_{}_t{}'.format(
+            '{}.sal_coarse_{}_{}_cls{}_{}_nokg{}_kg{}_t{}'.format(
                 self.args.graph_encoder,
                 self.args.saliency_method,
                 self.args.saliency_source if not self.args.save_saliency else 'target',
@@ -320,8 +320,7 @@ class SaliencyDataModule(SalKGDataModule):
                 key,
                 self.args.no_kg_exp,
                 self.args.kg_exp,
-                # self.args.threshold
-                0.01
+                self.args.threshold
             ) for key in CHOICE_KEYS[:NUM_CHOICES[self.args.dataset]]
         ]
         return sal_keys, dict(zip(CHOICE_KEYS[:NUM_CHOICES[self.args.dataset]], sal_keys))

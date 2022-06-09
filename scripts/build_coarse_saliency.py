@@ -1,9 +1,7 @@
 import os
 import sys
 
-sys.path.append(os.path.join(sys.path[0], '..'))
 from pathlib import Path
-import json
 import sys, os;
 
 sys.path.append(os.path.join(sys.path[0], '..'))
@@ -60,14 +58,8 @@ def main(args):
         indices = indices[:int(len(indices) / 100 * args.train_percentage)]
 
     # Create output dir
-    if args.target_type == 'cls':
-        bin_suffix = '' if args.train_percentage == 100 else str(args.train_percentage)
-        output_dir = os.path.join(args.root_dir, args.dataset, split_type, args.text_encoder, 'bin' + bin_suffix)
-        lp_output_dir = os.path.join(args.root_dir, args.dataset, split_type, args.text_encoder, 'npy')
-        if not os.path.exists(lp_output_dir):
-            os.makedirs(lp_output_dir)
-    elif args.target_type == 'reg':
-        output_dir = os.path.join(args.root_dir, args.dataset, split_type, args.text_encoder, 'json')
+    bin_suffix = '' if args.train_percentage == 100 else str(args.train_percentage)
+    output_dir = os.path.join(args.root_dir, args.dataset, split_type, args.text_encoder, 'bin' + bin_suffix)
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -114,35 +106,32 @@ def main(args):
             sal[0] = 1
 
     # Initialize dataset
-    if args.target_type == 'cls':
-        assert args.num_classes == 2
+    assert args.num_classes == 2
 
-        # Create indexed dataset builders
-        dataset_builders = {}
-        for key in choice_keys:
-            path = Path(
-                os.path.join(output_dir, '{}.{}.sal_coarse_{}_target_{}{}_{}_FS{}_{}.bin'.format(
-                    args.split,
-                    args.graph_encoder,
-                    args.saliency_method,
-                    args.target_type,
-                    args.num_classes,
-                    key,
-                    args.no_kg_exp,
-                    args.kg_exp
-                )
-                             )
-            )
-            if path.exists():
-                print(f"path {path} already exists, rm")
-                os.unlink(path)
+    # Create indexed dataset builders
+    dataset_builders = {}
+    for key in choice_keys:
+        path = Path(
+            os.path.join(output_dir, '{}.{}.sal_coarse_{}_target_{}{}_{}_nokg{}_kg{}_t{}.bin'.format(
+                args.split,
+                args.graph_encoder,
+                args.saliency_method,
+                args.target_type,
+                args.num_classes,
+                key,
+                args.no_kg_exp,
+                args.kg_exp,
+                args.threshold
+            ))
+        )
+        if path.exists():
+            print(f"path {path} already exists, rm")
+            os.unlink(path)
 
-            dataset_builders[key] = indexed_dataset.make_builder(
-                path,
-                impl="mmap"
-            )
-    elif args.target_type == 'reg':
-        dataset = {}
+        dataset_builders[key] = indexed_dataset.make_builder(
+            path,
+            impl="mmap"
+        )
 
     # Initialize progress bar
     pbar = tqdm.tqdm(
@@ -152,49 +141,21 @@ def main(args):
     )
 
     # Build dataset
-    if args.target_type == 'cls':
-        sal_cls = []
     for i in indices:
-        if args.target_type == 'cls' and args.num_classes == 2:
-            for j, key in enumerate(dataset_builders.keys()):
-                dataset_builders[key].add_item(torch.Tensor([sal[i, j]]))
-
-        elif args.target_type == 'cls':
-            raise NotImplementedError
-            assert args.saliency_method == 'occl'
-            for j, key in enumerate(dataset_builders.keys()):
-                dataset_builders[key].add_item(torch.Tensor([sal_classes[i, j]]))
-                sal_cls.append(sal_classes[i, j])
-        else:
-            raise NotImplementedError
-            dataset[int(i)] = list(sal[i])
+        for j, key in enumerate(dataset_builders.keys()):
+            dataset_builders[key].add_item(torch.Tensor([sal[i, j]]))
 
         pbar.update()
 
     pbar.close()
 
-    if args.target_type == 'cls':
         # Finalize indexed datasets
-        for key in choice_keys:
-            dataset_builders[key].finalize(os.path.join(output_dir,
-                                                        '{}.{}.sal_coarse_{}_target_{}{}_{}_FS{}_{}.idx'.format(
-                                                            args.split, args.graph_encoder, args.saliency_method,
-                                                            args.target_type, args.num_classes, key, args.no_kg_exp,
-                                                            args.kg_exp)))
-
-        # # Save log prior
-        # sal_cls = np.array(sal_cls)
-        # lp = np.bincount(sal_cls, minlength=args.num_classes) / sal_cls.size
-        # lp_path = os.path.join(lp_output_dir, '{}.{}.sal_coarse_occl_target_lp_{}{}.npy'.format(args.split, args.graph_encoder, args.target_type, args.num_classes))
-        # np.save(lp_path, lp)
-
-    elif args.target_type == 'reg':
-        raise NotImplementedError
-        output_file = os.path.join(output_dir,
-                                   '{}.{}.sal_coarse_occl_target_{}.json'.format(args.split, args.graph_encoder,
-                                                                                 args.target_type))
-        with open(output_file, 'w', encoding='utf-8') as f:
-            json.dump(dataset, f, ensure_ascii=False, indent=4)
+    for key in choice_keys:
+        dataset_builders[key].finalize(os.path.join(output_dir,
+            '{}.{}.sal_coarse_{}_target_{}{}_{}_nokg{}_kg{}_t{}.idx'.format(
+                args.split, args.graph_encoder, args.saliency_method,
+                args.target_type, args.num_classes, key, args.no_kg_exp,
+                args.kg_exp, args.threshold)))
 
     return 0
 

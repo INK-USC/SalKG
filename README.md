@@ -30,7 +30,10 @@ by `pip install -r requirements.txt`
 
 ## Data
 
-First download [csqa data](https://drive.google.com/file/d/1T5hHXHHj8QUrzzsbqzIZ3fnIgF7Vi4Dr/view?usp=sharing) and make sure that the dataset folder look like this
+First download [csqa data](https://drive.google.com/file/d/1T5hHXHHj8QUrzzsbqzIZ3fnIgF7Vi4Dr/view?usp=sharing) and unzip. The default folder is `data`. 
+Then download [embeddings](https://drive.google.com/file/d/1DUWgXYL7h-LoV6pM8IzyE-inIi1VqBEr/view?usp=sharing), unzip and put `tzw.ent.np` to `data/mhgrn_data/cpnet/` and `glove.transe.sgd.rel.npy` to `data/mhgrn_data/transe`.
+
+The final dataset folder should look like this
 
 ```
 data/ # root dir
@@ -42,6 +45,8 @@ data/ # root dir
       graph/      # extracted subgraphs
       paths/      # unpruned/pruned paths
       statement/  # csqa statement
+    cpnet/
+    transe/
 ```
 
 ## Usage
@@ -53,11 +58,13 @@ export NEPTUNE_API_TOKEN='<YOUR API KEY>'
 export NEPTUNE_PROJ_NAME='<YOUR PROJECT NAME>'
 ```
 
+The model weight would be saved to `save` with the subfolder name equal to the neptune id.
+
 The pipeline to train SalKG models (for detail parameters that we suggest tuning, please see the bash scripts)
 
 1. run `runs/build_qa.sh` for generating indexed dataset required by nokg and kg model
 
-   The flag `--fine-occl` would generate indexed dataset required by fine occl model
+   In the script, the flag `--fine-occl` would generate indexed dataset required by fine occl model
 
 2. run `runs/qa.sh` to run nokg and kg model
 

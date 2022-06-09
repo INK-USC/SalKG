@@ -151,9 +151,8 @@ def save_saliency(dm, model, args):
             # from QA model or Sal model
             'target' if args.task == 'qa' else 'pred',
             # data split
-            split
+            split)
         )
-                                     )
         # override if exist
         if os.path.exists(saliency_path):
             open(saliency_path, 'w').close()
